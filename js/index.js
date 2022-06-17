@@ -27,7 +27,7 @@ let messages = []
 async function getData(data){
     try {
         
-        let users = await fetch(`https://new-chat-najot-talim.herokuapp.com/${data}`, {headers: { token }})
+        let users = await fetch(`http://localhost:3000/${data}`, {headers: { token }})
         users = await users.json()
         return users
 
@@ -87,7 +87,6 @@ function renderMessage(msg){
         }
 
         else if(msg.type == 'file'){
-            console.log(msg);
             let template = fileMsgTemplate.cloneNode(true)
             let wrapper = template.getElementById('file-wrapper')
             let img = template.getElementById('msg-img')
@@ -114,7 +113,6 @@ function renderMessage(msg){
 
             uploadedLink.setAttribute('href', msg.file.view)
             uploadedName.textContent = msg.file.name
-            console.log(msg.file.name);
 
             uploadedFiles.append(uploadedItem)
         }
@@ -133,19 +131,26 @@ chatForm.onsubmit = async(event) => {
     fd.append('file', uploads.files[0])
 
     try {
-
-        let res = await fetch('https://new-chat-najot-talim.herokuapp.com/message', {
+        
+        let res = await fetch('http://localhost:3000/message', {
             method: 'POST',
             headers: { token },
             body: fd
         })
         res = await res.json()
-
+        
         if (res.status == 201) {
             render()
         } else {
             alert('error')
         }
+        
+        // socket emit
+        server.emit('new', {
+            userId,
+            message: textInput.value,
+            file: uploads.files[0]
+        })
 
     } catch (error) {
         console.log(error.message);

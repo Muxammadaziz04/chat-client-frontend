@@ -14,7 +14,7 @@ loginForm.onsubmit = async function (event){
     })
 
     try {        
-        let res = await fetch('https://new-chat-najot-talim.herokuapp.com/login', {
+        let res = await fetch('http://localhost:3000/login', {
             method: 'POST',
             body : obj,
             headers : {
