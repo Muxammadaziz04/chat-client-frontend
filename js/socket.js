@@ -1,35 +1,59 @@
-let server = io('https://new-chat-najot-talim.herokuapp.com', { transports: ['websocket', 'polling']})
+const API = 'https://new-chat-najot-talim.herokuapp.com'
+
+let server = io(API, { transports: ['websocket', 'polling']})
 
 
 server.on('send message', data =>{
         
-        let user = users.find(user => user.userId == msg.userId)
+        if(data.type == 'text'){
+                let template = textMsgTemplate.cloneNode(true)
+                let wrapper = template.getElementById('text-wrapper')
+                let img = template.getElementById('msg-img')
+                let author = template.getElementById('msg-name')
+                let message = template.getElementById('msg-text')
+                let time = template.getElementById('msg-time')
+    
+                let user = users.find(user => user.userId == data.userId)
+    
+                wrapper.className = data.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
+                img.setAttribute('src', user.avatar)
+                author.textContent = user.username
+                message.textContent = data.message
+                time.textContent = data.time
+    
+                chatMain.append(template)
+            }
+    
+            else if(data.type == 'file'){
+                let template = fileMsgTemplate.cloneNode(true)
+                let wrapper = template.getElementById('file-wrapper')
+                let img = template.getElementById('msg-img')
+                let author = template.getElementById('msg-name')
+                let obj = template.getElementById('msg-obj')
+                let link = template.getElementById('msg-link')
+                let time = template.getElementById('msg-time')
+    
+                let user = users.find(user => user.userId == data.userId)
+    
+                wrapper.className = data.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
+                img.setAttribute('src', user.avatar)
+                author.textContent = user.username
+                obj.setAttribute('data', data.file.view)
+                link.setAttribute('href', data.file.download)
+                time.textContent = data.time
+    
+                chatMain.append(template)
+    
+    
+                let uploadedItem = uploadedFileItem.cloneNode(true)
+                let uploadedLink = uploadedItem.getElementById('uploaded-link')
+                let uploadedName = uploadedItem.getElementById('uploaded-name')
+    
+                uploadedLink.setAttribute('href', data.file.view)
+                uploadedName.textContent = data.file.name
+    
+                uploadedFiles.append(uploadedItem)
+            }
 
-        let classname = data.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
-
-        let message = data.type == 'text' ? `
-        <div id="text-wrapper" class="${classname}">
-            <img id="msg-img" src="${user.avatar}" alt="profile-picture">
-            <div class="msg-text">
-                <p id="msg-name" class="msg-author">${user.username}</p>
-                <p id="msg-text" class="msg">${data.message}</p>
-                <p id="msg-time" class="time">${data.date}</p>
-            </div>
-        </div>
-        ` : `
-        <div id="file-wrapper" class="${classname}">
-            <img id="msg-img" src="${user.avatar}" alt="profile-picture">
-            <div class="msg-text">
-                <p id="msg-name" class="msg-author">${user.username}</p>
-                <object id="msg-obj" data="${data.file.view}" class="msg object-class"></object>
-                <a id="msg-link" href="${data.file.download}">
-                    <img src="./img/download.png" width="25px">
-                </a>
-                <p id="msg-time" class="time">19:00 PM</p>
-            </div>
-        </div>
-        `
-
-        chatMain.append(message)
     
 })

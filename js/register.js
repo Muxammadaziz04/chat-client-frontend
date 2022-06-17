@@ -6,7 +6,7 @@ let registerForm = document.getElementById('register-form')
 
 let showButton = document.getElementById('showButton')
 
-
+const API = 'https://new-chat-najot-talim.herokuapp.com'
 
 registerForm.onsubmit = async function (event){
     event.preventDefault()
@@ -18,7 +18,7 @@ registerForm.onsubmit = async function (event){
     fd.append('img', upload.files[0])
 
     try {        
-        let res = await fetch('https://new-chat-najot-talim.herokuapp.com/register', {
+        let res = await fetch(`${API}/register`, {
             method: 'POST',
             body : fd
         })

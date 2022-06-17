@@ -4,6 +4,7 @@ let loginForm = document.getElementById('login-form')
 
 let showButton = document.getElementById('showButton')
 
+const API = 'https://new-chat-najot-talim.herokuapp.com'
 
 loginForm.onsubmit = async function (event){
     event.preventDefault()
@@ -14,7 +15,7 @@ loginForm.onsubmit = async function (event){
     })
 
     try {        
-        let res = await fetch('https://new-chat-najot-talim.herokuapp.com/login', {
+        let res = await fetch(`${API}/login`, {
             method: 'POST',
             body : obj,
             headers : {
