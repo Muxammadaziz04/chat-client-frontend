@@ -1,4 +1,4 @@
-let server = io('http://localhost:3000', { transports: ['websocket', 'polling']})
+let server = io('https://new-chat-najot-talim.herokuapp.com', { transports: ['websocket', 'polling']})
 
 
 server.on('send message', data =>{

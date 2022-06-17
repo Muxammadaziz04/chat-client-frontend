@@ -27,7 +27,7 @@ let messages = []
 async function getData(data){
     try {
         
-        let users = await fetch(`http://localhost:3000/${data}`, {headers: { token }})
+        let users = await fetch(`https://new-chat-najot-talim.herokuapp.com/${data}`, {headers: { token }})
         users = await users.json()
         return users
 
@@ -132,7 +132,7 @@ chatForm.onsubmit = async(event) => {
 
     try {
         
-        let res = await fetch('http://localhost:3000/message', {
+        let res = await fetch('https://new-chat-najot-talim.herokuapp.com/message', {
             method: 'POST',
             headers: { token },
             body: fd
