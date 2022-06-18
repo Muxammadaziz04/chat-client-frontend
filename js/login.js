@@ -1,10 +1,12 @@
 let username = document.getElementById('usernameInput')
 let password = document.getElementById('passwordInput')
 let loginForm = document.getElementById('login-form')
-
 let showButton = document.getElementById('showButton')
 
+
 const API = 'https://new-chat-najot-talim.herokuapp.com'
+
+
 
 loginForm.onsubmit = async function (event){
     event.preventDefault()
@@ -14,15 +16,16 @@ loginForm.onsubmit = async function (event){
         password : password.value
     })
 
-    try {        
-        let res = await fetch(`${API}/login`, {
-            method: 'POST',
-            body : obj,
-            headers : {
-                "Content-Type": "application/json"
-            }
-        })
+    let options = {
+        method: 'POST',
+        body : obj,
+        headers : {
+            "Content-Type": "application/json"
+        }
+    }
 
+    try {        
+        let res = await fetch(`${API}/login`, options)
         res = await res.json()
         
         if(res.status == 200){
@@ -36,7 +39,6 @@ loginForm.onsubmit = async function (event){
     } catch (error) {
         console.log(error);
     }
-
 }
 
 

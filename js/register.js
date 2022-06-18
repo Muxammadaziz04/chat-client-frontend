@@ -3,10 +3,11 @@ let email = document.getElementById('emailInput')
 let password = document.getElementById('passwordInput')
 let upload = document.getElementById('uploadInput')
 let registerForm = document.getElementById('register-form')
-
 let showButton = document.getElementById('showButton')
 
+
 const API = 'https://new-chat-najot-talim.herokuapp.com'
+
 
 registerForm.onsubmit = async function (event){
     event.preventDefault()
@@ -17,12 +18,13 @@ registerForm.onsubmit = async function (event){
     fd.append('password', password.value)
     fd.append('img', upload.files[0])
 
-    try {        
-        let res = await fetch(`${API}/register`, {
-            method: 'POST',
-            body : fd
-        })
+    let options = {
+        method: 'POST',
+        body : fd
+    }
 
+    try {        
+        let res = await fetch(`${API}/register`, options)
         res = await res.json()
         
         if(res.status == 201){
@@ -36,7 +38,6 @@ registerForm.onsubmit = async function (event){
     } catch (error) {
         console.log(error);
     }
-
 }
 
 showButton.onclick = (e) => {

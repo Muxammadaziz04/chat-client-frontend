@@ -24,13 +24,65 @@ let users = []
 let messages = []
 
 
+
+
+function renderTextTemplate(msg){
+    let template = textMsgTemplate.cloneNode(true)
+    let wrapper = template.getElementById('text-wrapper')
+    let img = template.getElementById('msg-img')
+    let author = template.getElementById('msg-name')
+    let message = template.getElementById('msg-text')
+    let time = template.getElementById('msg-time')
+
+    let user = users.find(user => user.userId == msg.userId)
+
+    wrapper.className = msg.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
+    img.setAttribute('src', user.avatar)
+    author.textContent = user.username
+    message.textContent = msg.message
+    time.textContent = msg.time
+
+    chatMain.append(template)
+}
+
+
+function renderFileTemplate(msg) {
+    let user = users.find(user => user.userId == msg.userId)
+    
+    let template = fileMsgTemplate.cloneNode(true)
+    let wrapper = template.getElementById('file-wrapper')
+    let img = template.getElementById('msg-img')
+    let author = template.getElementById('msg-name')
+    let obj = template.getElementById('msg-obj')
+    let link = template.getElementById('msg-link')
+    let time = template.getElementById('msg-time')
+
+
+    wrapper.className = msg.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
+    img.setAttribute('src', user.avatar)
+    author.textContent = user.username
+    obj.setAttribute('data', msg.file.view)
+    link.setAttribute('href', msg.file.download)
+    time.textContent = msg.time
+    chatMain.append(template)
+
+
+    let uploadedItem = uploadedFileItem.cloneNode(true)
+    let uploadedLink = uploadedItem.getElementById('uploaded-link')
+    let uploadedName = uploadedItem.getElementById('uploaded-name')
+
+    uploadedLink.setAttribute('href', msg.file.view)
+    uploadedName.textContent = msg.file.name
+    uploadedFiles.append(uploadedItem)
+}
+
+
+
 async function getData(data){
-    try {
-        
+    try {    
         let users = await fetch(`${API}/${data}`, {headers: { token }})
         users = await users.json()
         return users
-
     } catch (error) {
         console.log(error.message);
     }
@@ -64,59 +116,19 @@ function renderUsers(users) {
 
 function renderMessage(msg){
     chatMain.innerHTML = null
+    uploadedFiles.innerHTML = null
 
     msg.forEach(msg => {
-        
         if(msg.type == 'text'){
-            let template = textMsgTemplate.cloneNode(true)
-            let wrapper = template.getElementById('text-wrapper')
-            let img = template.getElementById('msg-img')
-            let author = template.getElementById('msg-name')
-            let message = template.getElementById('msg-text')
-            let time = template.getElementById('msg-time')
-
-            let user = users.find(user => user.userId == msg.userId)
-
-            wrapper.className = msg.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
-            img.setAttribute('src', user.avatar)
-            author.textContent = user.username
-            message.textContent = msg.message
-            time.textContent = msg.time
-
-            chatMain.append(template)
+            renderTextTemplate(msg)
         }
-
         else if(msg.type == 'file'){
-            let template = fileMsgTemplate.cloneNode(true)
-            let wrapper = template.getElementById('file-wrapper')
-            let img = template.getElementById('msg-img')
-            let author = template.getElementById('msg-name')
-            let obj = template.getElementById('msg-obj')
-            let link = template.getElementById('msg-link')
-            let time = template.getElementById('msg-time')
-
-            let user = users.find(user => user.userId == msg.userId)
-
-            wrapper.className = msg.userId == userId ? "msg-wrapper msg-from" : "msg-wrapper"
-            img.setAttribute('src', user.avatar)
-            author.textContent = user.username
-            obj.setAttribute('data', msg.file.view)
-            link.setAttribute('href', msg.file.download)
-            time.textContent = msg.time
-
-            chatMain.append(template)
-
-
-            let uploadedItem = uploadedFileItem.cloneNode(true)
-            let uploadedLink = uploadedItem.getElementById('uploaded-link')
-            let uploadedName = uploadedItem.getElementById('uploaded-name')
-
-            uploadedLink.setAttribute('href', msg.file.view)
-            uploadedName.textContent = msg.file.name
-
-            uploadedFiles.append(uploadedItem)
+            renderFileTemplate(msg)
         }
-
+    })
+    chatMain.scrollTo({
+        top: chatMain.scrollHeight,
+        behavior: 'auto'
     })
 }
 
@@ -130,27 +142,34 @@ chatForm.onsubmit = async(event) => {
     fd.append('message', textInput.value)
     fd.append('file', uploads.files[0])
 
+    let options = {
+        method: 'POST',
+        headers: { token },
+        body: fd
+    }
+
     try {
-        
-        let res = await fetch(`${API}/message`, {
-            method: 'POST',
-            headers: { token },
-            body: fd
-        })
+        let res = await fetch(`${API}/message`, options)
         res = await res.json()
         
         if (res.status == 201) {
-            render()
+            res.data.type == 'text' ? renderTextTemplate(res.data) : renderFileTemplate(res.data)
+            chatMain.scrollTo({
+                top: chatMain.scrollHeight,
+                behavior: 'smooth'
+            })
         } else {
             alert('error')
         }
         
-        // socket emit
+        
+        // SOCKET EMIT
         server.emit('new', {
             userId,
             message: textInput.value,
             file: uploads.files[0]
         })
+
 
     } catch (error) {
         console.log(error.message);
