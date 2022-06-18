@@ -137,6 +137,8 @@ function renderMessage(msg){
 chatForm.onsubmit = async(event) => {
     event.preventDefault()
 
+    if(!textInput.value.trim()) return
+
     let fd = new FormData(chatForm)
     fd.append('userId', userId)
     fd.append('message', textInput.value)
