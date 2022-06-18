@@ -154,22 +154,21 @@ chatForm.onsubmit = async(event) => {
         
         if (res.status == 201) {
             res.data.type == 'text' ? renderTextTemplate(res.data) : renderFileTemplate(res.data)
+
             chatMain.scrollTo({
                 top: chatMain.scrollHeight,
                 behavior: 'smooth'
             })
-        } else {
-            alert('error')
-        }
-        
-        
-        // SOCKET EMIT
-        server.emit('new', {
-            userId,
-            message: textInput.value,
-            file: uploads.files[0]
-        })
 
+            server.emit('new', {
+                userId,
+                message: textInput.value,
+                file: uploads.files[0]
+            })
+
+        } else {
+            alert(res.message)
+        }
 
     } catch (error) {
         console.log(error.message);
