@@ -137,7 +137,7 @@ function renderMessage(msg){
 chatForm.onsubmit = async(event) => {
     event.preventDefault()
 
-    if(!textInput.value.trim() && !uploadedFiles.files[0]) return
+    // if(!textInput.value.trim() && !uploadedFiles.files[0]) return
 
     let fd = new FormData(chatForm)
     fd.append('userId', userId)
